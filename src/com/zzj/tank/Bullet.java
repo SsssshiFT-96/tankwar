@@ -27,6 +27,8 @@ public class Bullet {
 		rect.y = this.y;
 		rect.width = WIDTH;
 		rect.height = HEIGHT;
+		//一开始new出来就加入集合
+		tf.bullets.add(this);
 	}
 	
 	public Group getGroup() {

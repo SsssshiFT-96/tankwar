@@ -94,6 +94,13 @@ public class TankFrame extends Frame{
 			}
 		}
 		
+		if(tanks.size() == 0){
+			c = g.getColor();
+			g.setColor(Color.RED);
+			g.drawString("ƒ„”Æ¡À", GAME_WIDTH / 2, GAME_HEIGHT / 6);
+			g.setColor(c);
+		}
+		
 
 		
 //		x += 10;

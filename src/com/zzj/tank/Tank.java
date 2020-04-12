@@ -10,14 +10,16 @@ public class Tank {
 	//坦克高度宽度
 	public static int WIDTH = ResourceMgr.goodTankU.getWidth();
 	public static int HEIGHT = ResourceMgr.goodTankU.getHeight();
-	private int x, y;//位置
-	private Dir dir = Dir.DOWN;
+	int x, y;//位置
+	Dir dir = Dir.DOWN;
 	private boolean moving = true;
-	private TankFrame tf = null;
+	TankFrame tf = null;
 	private boolean living = true;
 	private Random random = new Random();//用于随机换方向,发射子弹
-	private Group group = Group.BAD;//默认new出来的坦克是敌方坦克
+	Group group = Group.BAD;//默认new出来的坦克是敌方坦克
 	Rectangle rect = new Rectangle();//道理同子弹中的rect
+	FireStrategy fs;//这里使用了策略模式
+	
 	
 	public Tank(int x, int y, Dir dir, Group group, TankFrame tf) {
 		super();
@@ -31,6 +33,24 @@ public class Tank {
 		rect.y = this.y;
 		rect.width = WIDTH;
 		rect.height = HEIGHT;
+		
+		//初始化开火策略，即判断是否为敌方坦克来选择开火策略
+		//使用配置文件可以当要改变开火策略时，只用修改配置文件中相应的信息即可。
+		if(group == Group.GOOD){
+			String goodFSName = (String) PropertyMgr.get("goodFs");
+			try {//得到名字代表的类加载到内存，并new出新对象
+				fs = (FireStrategy)Class.forName(goodFSName).newInstance();
+			} catch (InstantiationException e) {
+				e.printStackTrace();
+			} catch (IllegalAccessException e) {
+				e.printStackTrace();
+			} catch (ClassNotFoundException e) {
+				e.printStackTrace();
+			}
+		}
+		else{
+			fs = new DefaultFireStrategy();
+		}
 	}
 	public Group getGroup() {
 		return group;
@@ -38,13 +58,16 @@ public class Tank {
 	public void setGroup(Group group) {
 		this.group = group;
 	}
+	//传开火策略时，可以往fire里面传FireStrategy，但每次使用都需要new，所以将DefaultFireStrategy设为单例
+	//也可以将其作为成员变量
 	public void fire() {
 		//将坦克对象持有TankFrame对象的引用，这样拿到引用之后在tf对象上进行修改。
 		// TODO Auto-generated method stub
-		int bX = this.x + Tank.WIDTH / 2 - Bullet.WIDTH / 2;
-		int bY = this.y + Tank.HEIGHT / 2 - Bullet.HEIGHT / 2;
-		tf.bullets.add(new Bullet(bX, bY, this.dir, this.group,this.tf));
-		
+		//将fire变为策略模式
+//		int bX = this.x + Tank.WIDTH / 2 - Bullet.WIDTH / 2;
+//		int bY = this.y + Tank.HEIGHT / 2 - Bullet.HEIGHT / 2;
+//		tf.bullets.add(new Bullet(bX, bY, this.dir, this.group,this.tf));
+		fs.fire(this);
 	}
 	public Dir getDir() {
 		return dir;
