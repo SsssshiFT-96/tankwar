@@ -1,5 +1,7 @@
 package com.zzj.tank;
 
+import com.zzj.tank.abstractfactory.BaseTank;
+
 public class DefaultFireStrategy implements FireStrategy{
 	@Override
 	public void fire(Tank t){

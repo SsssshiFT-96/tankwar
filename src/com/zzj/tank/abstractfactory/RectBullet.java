@@ -1,13 +1,18 @@
-package com.zzj.tank;
+package com.zzj.tank.abstractfactory;
 
 import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.Rectangle;
 
+import com.zzj.tank.Dir;
+import com.zzj.tank.Explode;
+import com.zzj.tank.Group;
+import com.zzj.tank.ResourceMgr;
+import com.zzj.tank.Tank;
+import com.zzj.tank.TankFrame;
 import com.zzj.tank.abstractfactory.BaseBullet;
-import com.zzj.tank.abstractfactory.BaseTank;
 
-public class Bullet extends BaseBullet{
+public class RectBullet extends BaseBullet{
 	private static final int SPEED = 10;
 	private int x,y;//子弹位置
 	private Dir dir;//子弹方向
@@ -19,7 +24,7 @@ public class Bullet extends BaseBullet{
 	private Group group = Group.BAD;
 	Rectangle rect = new Rectangle();//一开始就产生rect来记录，这样后面就不用总是new了。
 	
-	public Bullet(int x, int y, Dir dir, Group group, TankFrame tf){
+	public RectBullet(int x, int y, Dir dir, Group group, TankFrame tf){
 		this.x = x;
 		this.y = y;
 		this.dir = dir;
@@ -46,26 +51,13 @@ public class Bullet extends BaseBullet{
 		if(!living){
 			tf.bullets.remove(this);
 		}
-		
-//		Color c = g.getColor();//获得原来的颜色
-//		g.setColor(Color.RED);
-//		g.fillOval(x, y, 6, 6);
-//		g.setColor(c);//设置完后将原来的颜色还回去
 		//上子弹图片
-		switch(dir){
-		case LEFT:
-			g.drawImage(ResourceMgr.bulletL, x, y, null);
-			break;
-		case RIGHT:
-			g.drawImage(ResourceMgr.bulletR, x, y, null);
-			break;
-		case UP:
-			g.drawImage(ResourceMgr.bulletU, x, y, null);
-			break;
-		case DOWN:
-			g.drawImage(ResourceMgr.bulletD, x, y, null);
-			break;
-	}
+		Color c = g.getColor();//获得原来的颜色
+		g.setColor(Color.YELLOW);
+		g.fillOval(x, y, 6, 6);
+		g.setColor(c);//设置完后将原来的颜色还回去
+		
+		
 		move();
 	}
 
@@ -117,5 +109,4 @@ public class Bullet extends BaseBullet{
 		// TODO Auto-generated method stub
 		this.living = false;
 	}
-
 }

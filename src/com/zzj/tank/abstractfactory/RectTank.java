@@ -1,13 +1,20 @@
-package com.zzj.tank;
+package com.zzj.tank.abstractfactory;
 
 import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.Rectangle;
 import java.util.Random;
 
-import com.zzj.tank.abstractfactory.BaseTank;
+import com.zzj.tank.Bullet;
+import com.zzj.tank.DefaultFireStrategy;
+import com.zzj.tank.Dir;
+import com.zzj.tank.FireStrategy;
+import com.zzj.tank.Group;
+import com.zzj.tank.PropertyMgr;
+import com.zzj.tank.ResourceMgr;
+import com.zzj.tank.TankFrame;
 
-public class Tank extends BaseTank{
+public class RectTank extends BaseTank{
 	private static final int SPEED = 3;//设置坦克的速度 
 	//坦克高度宽度
 	public static int WIDTH = ResourceMgr.goodTankU.getWidth();
@@ -18,12 +25,12 @@ public class Tank extends BaseTank{
 	TankFrame tf = null;
 	private boolean living = true;
 	private Random random = new Random();//用于随机换方向,发射子弹
-	//Group group = Group.BAD;//默认new出来的坦克是敌方坦克
-	//public Rectangle rect = new Rectangle();//道理同子弹中的rect
+	Group group = Group.BAD;//默认new出来的坦克是敌方坦克
+	public Rectangle rect = new Rectangle();//道理同子弹中的rect
 	FireStrategy fs;//这里使用了策略模式
 	
 	
-	public Tank(int x, int y, Dir dir, Group group, TankFrame tf) {
+	public RectTank(int x, int y, Dir dir, Group group, TankFrame tf) {
 		super();
 		this.x = x;
 		this.y = y;
@@ -66,8 +73,8 @@ public class Tank extends BaseTank{
 		//将坦克对象持有TankFrame对象的引用，这样拿到引用之后在tf对象上进行修改。
 		// TODO Auto-generated method stub
 		//将fire变为策略模式
-		int bX = this.x + Tank.WIDTH / 2 - Bullet.WIDTH / 2;
-		int bY = this.y + Tank.HEIGHT / 2 - Bullet.HEIGHT / 2;
+		int bX = this.x + RectTank.WIDTH / 2 - Bullet.WIDTH / 2;
+		int bY = this.y + RectTank.HEIGHT / 2 - Bullet.HEIGHT / 2;
 		//tf.bullets.add(new Bullet(bX, bY, this.dir, this.group,this.tf));
 		Dir[] dirs = Dir.values();
 		for(Dir dir : dirs){
@@ -128,10 +135,10 @@ public class Tank extends BaseTank{
 		//不归为0，保证好看
 		if(this.x < 2) x = 2;
 		if(this.y < 28) y = 28;
-		if(this.x > TankFrame.GAME_WIDTH - Tank.WIDTH - 2) 
-			x = TankFrame.GAME_WIDTH - Tank.WIDTH - 2;
-		if(this.y > TankFrame.GAME_HEIGHT - Tank.HEIGHT - 2) 
-			y = TankFrame.GAME_HEIGHT - Tank.HEIGHT - 2;
+		if(this.x > TankFrame.GAME_WIDTH - RectTank.WIDTH - 2) 
+			x = TankFrame.GAME_WIDTH - RectTank.WIDTH - 2;
+		if(this.y > TankFrame.GAME_HEIGHT - RectTank.HEIGHT - 2) 
+			y = TankFrame.GAME_HEIGHT - RectTank.HEIGHT - 2;
 	}
 	private void randomDir() {
 		// TODO Auto-generated method stub
@@ -142,35 +149,14 @@ public class Tank extends BaseTank{
 		// TODO Auto-generated method stub
 		//Graphics类可以在窗口中任意画画
 		//每重新调用窗口，该方法均会被使用，x，y值改变完后方块的移动
-//		Color c = g.getColor();//获得原来的颜色
-//		g.setColor(Color.GREEN);
-//		g.fillRect(x, y, 50, 50);//画一个方块，参数依次是坐标和大小
-//		g.setColor(c);
+		
 		//上坦克图片，不同方向的图片不同。
 		if(!living) tf.tanks.remove(this);//没活着就移除
 		//判断是否是敌方坦克来获取相应图片
-		switch(dir){
-			case LEFT:
-				g.drawImage(this.group == Group.GOOD? 
-						ResourceMgr.goodTankL : ResourceMgr.badTankL, 
-						x, y, null);
-				break;
-			case RIGHT:
-				g.drawImage(this.group == Group.GOOD? 
-						ResourceMgr.goodTankR : ResourceMgr.badTankR, 
-						x, y, null);
-				break;
-			case UP:
-				g.drawImage(this.group == Group.GOOD? 
-						ResourceMgr.goodTankU : ResourceMgr.badTankU, 
-						x, y, null);
-				break;
-			case DOWN:
-				g.drawImage(this.group == Group.GOOD? 
-						ResourceMgr.goodTankD : ResourceMgr.badTankD, 
-						x, y, null);
-				break;
-		}
+		Color c = g.getColor();//获得原来的颜色
+		g.setColor(group == Group.GOOD ? Color.RED : Color.BLUE);
+		g.fillRect(x, y, 50, 50);//画一个方块，参数依次是坐标和大小
+		g.setColor(c);
 
 		move();
 		

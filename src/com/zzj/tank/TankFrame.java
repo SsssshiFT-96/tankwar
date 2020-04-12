@@ -11,16 +11,29 @@ import java.awt.event.WindowEvent;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.zzj.tank.abstractfactory.BaseBullet;
+import com.zzj.tank.abstractfactory.BaseExplode;
+import com.zzj.tank.abstractfactory.BaseTank;
+import com.zzj.tank.abstractfactory.DefaultFactory;
+import com.zzj.tank.abstractfactory.GameFactory;
+import com.zzj.tank.abstractfactory.RectFactory;
+
 public class TankFrame extends Frame{
 	Tank myTank = new Tank(400,400,Dir.UP, Group.GOOD, this);
-	List<Bullet> bullets = new ArrayList<>();
+	//public List<Bullet> bullets = new ArrayList<>();
+	public List<BaseBullet> bullets = new ArrayList<>();
 	//Bullet b = new Bullet(300,300,Dir.DOWN);
 	//加入敌方坦克
-	List<Tank> tanks = new ArrayList<>();
-	List<Explode> explodes = new ArrayList<>();
-	Explode e = new Explode(100, 100, this);
+	public List<BaseTank> tanks = new ArrayList<>();
+	//List<Explode> explodes = new ArrayList<>();
+	public List<BaseExplode> explodes = new ArrayList<>();
 	
-	static final int GAME_WIDTH = 1080, GAME_HEIGHT = 720;
+	//初始化工厂
+	public GameFactory gf = new DefaultFactory();
+	
+	//Explode e = new Explode(100, 100, this);
+	
+	public static final int GAME_WIDTH = 1080, GAME_HEIGHT = 720;
 	
 	public TankFrame(){
 		setSize(GAME_WIDTH,GAME_HEIGHT);//设置窗口大小
