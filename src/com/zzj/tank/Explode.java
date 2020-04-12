@@ -10,19 +10,21 @@ public class Explode {
 	public static int WIDTH = ResourceMgr.explodes[0].getWidth();
 	public static int HEIGHT = ResourceMgr.explodes[0].getHeight();
 	//private boolean living = true;
-	TankFrame tf = null;
+	//TankFrame tf = null;
+	GameModel gm = null;
 	private int step = 0;//记录画到第几幅爆炸图
 	
-	public Explode(int x, int y, TankFrame tf){
+	public Explode(int x, int y, GameModel gm/*TankFrame tf*/){
 		this.x = x;
 		this.y = y;
-		this.tf = tf;
+//		this.tf = tf;
+		this.gm = gm;
 	}
 	public void paint(Graphics g){
 		g.drawImage(ResourceMgr.explodes[step++], x, y, null);
 		if(step >= ResourceMgr.explodes.length)
 			//爆炸结束则移除集合结束爆炸
-			tf.explodes.remove(this);
+			gm.explodes.remove(this);
 		
 	}	
 }

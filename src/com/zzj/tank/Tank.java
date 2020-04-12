@@ -19,14 +19,15 @@ public class Tank {
 	Group group = Group.BAD;//默认new出来的坦克是敌方坦克
 	Rectangle rect = new Rectangle();//道理同子弹中的rect
 	FireStrategy fs;//这里使用了策略模式
+	GameModel gm;//将持有窗口的引用换成GameModel引用。用到了Model和View（视图）的分离，即MV分离
 	
-	
-	public Tank(int x, int y, Dir dir, Group group, TankFrame tf) {
+	public Tank(int x, int y, Dir dir, Group group, GameModel gm/*TankFrame tf*/) {
 		super();
 		this.x = x;
 		this.y = y;
 		this.dir = dir;
-		this.tf = tf;
+		//this.tf = tf;
+		this.gm = gm;
 		this.group = group;
 		
 		rect.x = this.x;
@@ -141,7 +142,8 @@ public class Tank {
 //		g.fillRect(x, y, 50, 50);//画一个方块，参数依次是坐标和大小
 //		g.setColor(c);
 		//上坦克图片，不同方向的图片不同。
-		if(!living) tf.tanks.remove(this);//没活着就移除
+		//if(!living) tf.tanks.remove(this);//没活着就移除
+		if(!living) gm.tanks.remove(this);
 		//判断是否是敌方坦克来获取相应图片
 		switch(dir){
 			case LEFT:

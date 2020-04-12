@@ -12,15 +12,17 @@ public class Bullet {
 	public static int WIDTH = ResourceMgr.bulletD.getWidth();
 	public static int HEIGHT = ResourceMgr.bulletD.getHeight();
 	private boolean living = true;
-	TankFrame tf = null;
+//	TankFrame tf = null;
+	GameModel gm = null;
 	private Group group = Group.BAD;
 	Rectangle rect = new Rectangle();//一开始就产生rect来记录，这样后面就不用总是new了。
 	
-	public Bullet(int x, int y, Dir dir, Group group, TankFrame tf){
+	public Bullet(int x, int y, Dir dir, Group group, GameModel gm/*TankFrame tf*/){
 		this.x = x;
 		this.y = y;
 		this.dir = dir;
-		this.tf = tf;
+		//this.tf = tf;
+		this.gm = gm;
 		this.group = group;
 	
 		rect.x = this.x;
@@ -28,7 +30,8 @@ public class Bullet {
 		rect.width = WIDTH;
 		rect.height = HEIGHT;
 		//一开始new出来就加入集合
-		tf.bullets.add(this);
+		//tf.bullets.add(this);
+		gm.bullets.add(this);
 	}
 	
 	public Group getGroup() {
@@ -41,7 +44,7 @@ public class Bullet {
 
 	public void paint(Graphics g){
 		if(!living){
-			tf.bullets.remove(this);
+			gm.bullets.remove(this);
 		}
 		
 //		Color c = g.getColor();//获得原来的颜色
@@ -104,7 +107,7 @@ public class Bullet {
 			this.die();
 			int eX = tank.getX() + Tank.WIDTH / 2 - Explode.WIDTH / 2;
 			int eY = tank.getY() + Tank.HEIGHT / 2 - Explode.HEIGHT / 2;
-			tf.explodes.add(new Explode(eX, eY, tf));
+			gm.explodes.add(new Explode(eX, eY, gm));
 		}
 	}
 

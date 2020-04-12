@@ -12,13 +12,16 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class TankFrame extends Frame{
-	Tank myTank = new Tank(400,400,Dir.UP, Group.GOOD, this);
-	List<Bullet> bullets = new ArrayList<>();
-	//Bullet b = new Bullet(300,300,Dir.DOWN);
-	//加入敌方坦克
-	List<Tank> tanks = new ArrayList<>();
-	List<Explode> explodes = new ArrayList<>();
-	Explode e = new Explode(100, 100, this);
+//	Tank myTank = new Tank(400,400,Dir.UP, Group.GOOD, this);
+//	List<Bullet> bullets = new ArrayList<>();
+//	//Bullet b = new Bullet(300,300,Dir.DOWN);
+//	//加入敌方坦克
+//	List<Tank> tanks = new ArrayList<>();
+//	List<Explode> explodes = new ArrayList<>();
+//	Explode e = new Explode(100, 100, this);
+	//使用门面设计模式
+	GameModel gm = new GameModel();
+	
 	
 	static final int GAME_WIDTH = 1080, GAME_HEIGHT = 720;
 	
@@ -62,49 +65,51 @@ public class TankFrame extends Frame{
 	}
 	@Override
 	public void paint(Graphics g){//窗口重新调用或绘制时会调用该方法
-		Color c = g.getColor();
-		g.setColor(Color.WHITE);
-		g.drawString("子弹的数量" + bullets.size(), 10, 60);
-		g.drawString("敌人的数量" + tanks.size(), 10, 80);
-		g.drawString("爆炸的数量" + explodes.size(), 10, 100);
-		g.setColor(c);
+		gm.paint(g);
 		
-		myTank.paint(g);
-		//b.paint(g);
-//		for(Bullet b : bullets){若用该方法，因为是用了迭代器，迭代时外部不能对集合进行删除操作，所以该遍历不行。
-//			b.paint(g);
+//		Color c = g.getColor();
+//		g.setColor(Color.WHITE);
+//		g.drawString("子弹的数量" + bullets.size(), 10, 60);
+//		g.drawString("敌人的数量" + tanks.size(), 10, 80);
+//		g.drawString("爆炸的数量" + explodes.size(), 10, 100);
+//		g.setColor(c);
+//		
+//		myTank.paint(g);
+//		//b.paint(g);
+////		for(Bullet b : bullets){若用该方法，因为是用了迭代器，迭代时外部不能对集合进行删除操作，所以该遍历不行。
+////			b.paint(g);
+////		}
+//		for(int i = 0; i < bullets.size(); i++){
+//			bullets.get(i).paint(g);
 //		}
-		for(int i = 0; i < bullets.size(); i++){
-			bullets.get(i).paint(g);
-		}
-		//画坦克
-		for(int i = 0; i < tanks.size(); i++){
-			tanks.get(i).paint(g);
-		}
-		
-		//画爆炸
-		for(int i = 0; i < explodes.size(); i++){
-			explodes.get(i).paint(g);
-		}
-		
-		//判断子弹和坦克是否相撞
-		for(int i = 0; i < bullets.size(); i++){
-			for(int j = 0; j < tanks.size(); j++){
-				bullets.get(i).collideWith(tanks.get(j));
-			}
-		}
-		
-		if(tanks.size() == 0){
-			c = g.getColor();
-			g.setColor(Color.RED);
-			g.drawString("你赢了", GAME_WIDTH / 2, GAME_HEIGHT / 6);
-			g.setColor(c);
-		}
-		
-
-		
-//		x += 10;
-//		y += 10;
+//		//画坦克
+//		for(int i = 0; i < tanks.size(); i++){
+//			tanks.get(i).paint(g);
+//		}
+//		
+//		//画爆炸
+//		for(int i = 0; i < explodes.size(); i++){
+//			explodes.get(i).paint(g);
+//		}
+//		
+//		//判断子弹和坦克是否相撞
+//		for(int i = 0; i < bullets.size(); i++){
+//			for(int j = 0; j < tanks.size(); j++){
+//				bullets.get(i).collideWith(tanks.get(j));
+//			}
+//		}
+//		
+//		if(tanks.size() == 0){
+//			c = g.getColor();
+//			g.setColor(Color.RED);
+//			g.drawString("你赢了", GAME_WIDTH / 2, GAME_HEIGHT / 6);
+//			g.setColor(c);
+//		}
+//		
+//
+//		
+////		x += 10;
+////		y += 10;
 	}
 	class MyKeyListener extends KeyAdapter{
 		boolean bL = false;
@@ -156,7 +161,8 @@ public class TankFrame extends Frame{
 				break;
 				
 			case KeyEvent.VK_CONTROL://松开ctrl键后发射子弹。
-				myTank.fire();
+				//myTank.fire();
+				gm.getMainTank().fire();
 			default:
 				break;
 			}
@@ -165,7 +171,8 @@ public class TankFrame extends Frame{
 
 		private void setMainTankDir() {//设置事件发生后坦克的方向
 			// TODO Auto-generated method stub
-			
+			//将myTank换成从gm中获取
+			Tank myTank = gm.getMainTank();
 			if(!bL && !bR && !bU && !bD) //让坦克停止的情况
 				myTank.setMoving(false);
 			else {
@@ -174,6 +181,7 @@ public class TankFrame extends Frame{
 				if(bR) myTank.setDir(Dir.RIGHT);
 				if(bU) myTank.setDir(Dir.UP);
 				if(bD) myTank.setDir(Dir.DOWN);
+			
 			}
 		}
 		
