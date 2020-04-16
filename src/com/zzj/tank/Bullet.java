@@ -4,25 +4,25 @@ import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.Rectangle;
 
-public class Bullet {
+public class Bullet extends GameObject{
 	private static final int SPEED = 10;
-	private int x,y;//子弹位置
+//	private int x,y;//子弹位置
 	private Dir dir;//子弹方向
 	//子弹高度宽度
 	public static int WIDTH = ResourceMgr.bulletD.getWidth();
 	public static int HEIGHT = ResourceMgr.bulletD.getHeight();
 	private boolean living = true;
 //	TankFrame tf = null;
-	GameModel gm = null;
-	private Group group = Group.BAD;
-	Rectangle rect = new Rectangle();//一开始就产生rect来记录，这样后面就不用总是new了。
+//	GameModel gm = null;
+	public Group group = Group.BAD;
+	public Rectangle rect = new Rectangle();//一开始就产生rect来记录，这样后面就不用总是new了。
 	
-	public Bullet(int x, int y, Dir dir, Group group, GameModel gm/*TankFrame tf*/){
+	public Bullet(int x, int y, Dir dir, Group group/*, GameModel gmTankFrame tf*/){
 		this.x = x;
 		this.y = y;
 		this.dir = dir;
 		//this.tf = tf;
-		this.gm = gm;
+//		this.gm = gm;
 		this.group = group;
 	
 		rect.x = this.x;
@@ -31,9 +31,11 @@ public class Bullet {
 		rect.height = HEIGHT;
 		//一开始new出来就加入集合
 		//tf.bullets.add(this);
-		gm.bullets.add(this);
+//		GameModel.getInstance().add(this);
+//		gm.add(this);
+		GameModel.getInstance().add(this);
 	}
-	
+
 	public Group getGroup() {
 		return group;
 	}
@@ -44,7 +46,8 @@ public class Bullet {
 
 	public void paint(Graphics g){
 		if(!living){
-			gm.bullets.remove(this);
+//			gm.remove(this);
+			GameModel.getInstance().remove(this);
 		}
 		
 //		Color c = g.getColor();//获得原来的颜色
@@ -93,26 +96,41 @@ public class Bullet {
 			living = false;
 	}
 	//判断子弹和坦克是否相撞
-	public void collideWith(Tank tank) {
-		// TODO Auto-generated method stub
-		//判断子弹与坦克是否为同一方
-		if(this.group == tank.getGroup()) return;
-		//获取子弹和坦克相同大小的矩形和其位置
-		//TODO:用一个rect来记录子弹的位置
-//		Rectangle rect1 = new Rectangle(this.x, this.y, WIDTH, HEIGHT);
-//		Rectangle rect2 = new Rectangle(tank.getX(), tank.getY(), Tank.WIDTH, Tank.HEIGHT);
-		//判断是否相交，相交即消失,消失产生爆炸
-		if(rect.intersects(tank.rect)){
-			tank.die();
-			this.die();
-			int eX = tank.getX() + Tank.WIDTH / 2 - Explode.WIDTH / 2;
-			int eY = tank.getY() + Tank.HEIGHT / 2 - Explode.HEIGHT / 2;
-			gm.explodes.add(new Explode(eX, eY, gm));
-		}
-	}
+	//该方法转移到Collider中
+//	public boolean collideWith(Tank tank) {
+//		// TODO Auto-generated method stub
+//		//判断子弹与坦克是否为同一方
+//		if(this.group == tank.getGroup()) return false;
+//		//获取子弹和坦克相同大小的矩形和其位置
+//		//TODO:用一个rect来记录子弹的位置
+////		Rectangle rect1 = new Rectangle(this.x, this.y, WIDTH, HEIGHT);
+////		Rectangle rect2 = new Rectangle(tank.getX(), tank.getY(), Tank.WIDTH, Tank.HEIGHT);
+//		//判断是否相交，相交即消失,消失产生爆炸
+//		if(rect.intersects(tank.rect)){
+//			tank.die();
+//			this.die();
+//			int eX = tank.getX() + Tank.WIDTH / 2 - Explode.WIDTH / 2;
+//			int eY = tank.getY() + Tank.HEIGHT / 2 - Explode.HEIGHT / 2;
+//			gm.add(new Explode(eX, eY, gm));
+//			return true;
+//		}
+//		return false;
+//	}
 
-	private void die() {
+	public void die() {
 		// TODO Auto-generated method stub
 		this.living = false;
+	}
+
+	@Override
+	public int getWidth() {
+		// TODO Auto-generated method stub
+		return WIDTH;
+	}
+
+	@Override
+	public int getHeight() {
+		// TODO Auto-generated method stub
+		return HEIGHT;
 	}
 }

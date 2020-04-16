@@ -5,29 +5,38 @@ import java.awt.Graphics;
 import java.awt.Rectangle;
 import java.util.Random;
 
-public class Tank {
+import com.zzj.tank.strategy.DefaultFireStrategy;
+import com.zzj.tank.strategy.FireStrategy;
+
+public class Tank extends GameObject{
 	private static final int SPEED = 3;//设置坦克的速度 
 	//坦克高度宽度
 	public static int WIDTH = ResourceMgr.goodTankU.getWidth();
 	public static int HEIGHT = ResourceMgr.goodTankU.getHeight();
-	int x, y;//位置
-	Dir dir = Dir.DOWN;
+	//继承了GO所以不用再定义x，y。
+//	public int x;//位置
+//	public int y;
+	int preX, preY;//记录碰撞前的位置
+	public Dir dir = Dir.DOWN;
 	private boolean moving = true;
 	TankFrame tf = null;
 	private boolean living = true;
 	private Random random = new Random();//用于随机换方向,发射子弹
-	Group group = Group.BAD;//默认new出来的坦克是敌方坦克
-	Rectangle rect = new Rectangle();//道理同子弹中的rect
+	public Group group = Group.BAD;//默认new出来的坦克是敌方坦克
+	public Rectangle rect = new Rectangle();//道理同子弹中的rect
 	FireStrategy fs;//这里使用了策略模式
-	GameModel gm;//将持有窗口的引用换成GameModel引用。用到了Model和View（视图）的分离，即MV分离
+	//不用初始化gm，用到直接调用getInstance即可。
+//	public GameModel gm;//将持有窗口的引用换成GameModel引用。用到了Model和View（视图）的分离，即MV分离
+
 	
-	public Tank(int x, int y, Dir dir, Group group, GameModel gm/*TankFrame tf*/) {
+	public Tank(int x, int y, Dir dir, Group group  /*, GameModel gm TankFrame tf*/) {
 		super();
 		this.x = x;
 		this.y = y;
 		this.dir = dir;
 		//this.tf = tf;
-		this.gm = gm;
+//		this.gm = gm;
+		//this.gm = GameModel.getInstance();
 		this.group = group;
 		
 		rect.x = this.x;
@@ -52,6 +61,10 @@ public class Tank {
 		else{
 			fs = new DefaultFireStrategy();
 		}
+		//new完直接加入集合，这里要判断是否为敌方坦克。因为之前add是在gm中加的，现在统一在构造函数中加入，需要进行判断。
+		if(group == Group.BAD)
+			GameModel.getInstance().add(this);
+		
 	}
 	public Group getGroup() {
 		return group;
@@ -70,6 +83,9 @@ public class Tank {
 //		tf.bullets.add(new Bullet(bX, bY, this.dir, this.group,this.tf));
 		fs.fire(this);
 	}
+	public Rectangle getRect() {
+		return rect;
+	}
 	public Dir getDir() {
 		return dir;
 	}
@@ -84,6 +100,9 @@ public class Tank {
 	}
 	private void move() {
 		// TODO Auto-generated method stub
+		//记录移动之前的位置
+		preX = x;
+		preY = y;
 		if(!moving) return;
 		switch(dir){
 		case LEFT:
@@ -143,7 +162,9 @@ public class Tank {
 //		g.setColor(c);
 		//上坦克图片，不同方向的图片不同。
 		//if(!living) tf.tanks.remove(this);//没活着就移除
-		if(!living) gm.tanks.remove(this);
+		if(!living) 
+//			gm.remove(this);
+			GameModel.getInstance().remove(this);
 		//判断是否是敌方坦克来获取相应图片
 		switch(dir){
 			case LEFT:
@@ -186,5 +207,22 @@ public class Tank {
 	public void die() {
 		// TODO Auto-generated method stub
 		this.living = false;
+	}
+	public void back() {
+		// TODO Auto-generated method stub
+		x = preX;
+		y = preY;
+		
+	}
+	@Override
+	public int getWidth() {
+		// TODO Auto-generated method stub
+		return WIDTH;
+	}
+
+	@Override
+	public int getHeight() {
+		// TODO Auto-generated method stub
+		return HEIGHT;
 	}
 }

@@ -1,4 +1,9 @@
-package com.zzj.tank;
+package com.zzj.tank.strategy;
+
+import com.zzj.tank.Bullet;
+import com.zzj.tank.Dir;
+import com.zzj.tank.GameModel;
+import com.zzj.tank.Tank;
 
 public class FourDirFireStrategy implements FireStrategy{
 	@Override
@@ -8,7 +13,7 @@ public class FourDirFireStrategy implements FireStrategy{
 		
 		Dir[] dirs = Dir.values();
 		for(Dir dir : dirs){
-			new Bullet(bX, bY, dir, t.group, t.gm);
+			new Bullet(bX, bY, dir, t.group /*, GameModel.getInstance()/*t.gm*/);
 		}
 		
 	}

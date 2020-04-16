@@ -20,7 +20,8 @@ public class TankFrame extends Frame{
 //	List<Explode> explodes = new ArrayList<>();
 //	Explode e = new Explode(100, 100, this);
 	//使用门面设计模式
-	GameModel gm = new GameModel();
+//	GameModel gm = new GameModel();
+	GameModel gm = GameModel.getInstance();
 	
 	
 	static final int GAME_WIDTH = 1080, GAME_HEIGHT = 720;

@@ -1,9 +1,11 @@
 #tanks count at initialization
-initTankCount=2
+initTankCount=4
 tankSpeed=5
 bulletSpeed=10
 gameWidth=1080
 gameHeight=720
 #fireStrategy
-goodFs=com.zzj.tank.FourDirFireStrategy
-badFs=com.zzj.tank.DefaultFireStrategy
+goodFs=com.zzj.tank.strategy.FourDirFireStrategy
+badFs=com.zzj.tank.strategy.DefaultFireStrategy
+#colliders
+colliders=com.zzj.tank.cor.BulletTankCollider,com.zzj.tank.cor.TankTankCollider
