@@ -163,7 +163,10 @@ public class TankFrame extends Frame{
 				
 			case KeyEvent.VK_CONTROL://松开ctrl键后发射子弹。
 				//myTank.fire();
-				gm.getMainTank().fire();
+//				gm.getMainTank().fire();
+				//使用观察者模式
+				gm.getMainTank().handleFireKey();
+				
 			default:
 				break;
 			}

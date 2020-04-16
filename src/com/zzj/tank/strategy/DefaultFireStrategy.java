@@ -12,12 +12,12 @@ public class DefaultFireStrategy implements FireStrategy{
 		int bX = t.x + Tank.WIDTH / 2 - Bullet.WIDTH / 2;
 		int bY = t.y + Tank.HEIGHT / 2 - Bullet.HEIGHT / 2;
 		
-//		new Bullet(bX, bY, t.dir, t.group /*, GameModel.getInstance()/*t.gm*/);
+		new Bullet(bX, bY, t.dir, t.group /*, GameModel.getInstance()/*t.gm*/);
 		//使用装饰模式装饰子弹
 		//存在一个bug，就是会往集合中加进去两次子弹。
-		GameModel.getInstance().add(
-				new RectDecorator(
-						new TailDecorator(
-						new Bullet(bX, bY, t.dir, t.group))));
+//		GameModel.getInstance().add(
+//				new RectDecorator(
+//						new TailDecorator(
+//						new Bullet(bX, bY, t.dir, t.group))));
 	}
 }

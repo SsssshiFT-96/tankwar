@@ -3,8 +3,13 @@ package com.zzj.tank;
 import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.Rectangle;
+import java.util.Arrays;
+import java.util.List;
 import java.util.Random;
 
+import com.zzj.tank.observer.TankFireEvent;
+import com.zzj.tank.observer.TankFireHandler;
+import com.zzj.tank.observer.TankFireObserver;
 import com.zzj.tank.strategy.DefaultFireStrategy;
 import com.zzj.tank.strategy.FireStrategy;
 
@@ -224,5 +229,15 @@ public class Tank extends GameObject{
 	public int getHeight() {
 		// TODO Auto-generated method stub
 		return HEIGHT;
+	}
+	//使用观察者模式
+	private List<TankFireObserver> fireObserves = 
+			Arrays.asList(new TankFireHandler());
+	public void handleFireKey() {
+		TankFireEvent event = new TankFireEvent(this);
+		for(TankFireObserver o : fireObserves){
+			o.actionOnFire(event);
+		}
+		
 	}
 }
