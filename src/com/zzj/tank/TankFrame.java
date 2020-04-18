@@ -166,7 +166,13 @@ public class TankFrame extends Frame{
 //				gm.getMainTank().fire();
 				//使用观察者模式
 				gm.getMainTank().handleFireKey();
-				
+			//对游戏进行存读盘
+			case KeyEvent.VK_S:
+				gm.save();
+				break;
+			case KeyEvent.VK_L:
+				gm.load();
+				break;
 			default:
 				break;
 			}

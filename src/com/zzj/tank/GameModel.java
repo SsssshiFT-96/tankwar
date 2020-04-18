@@ -4,6 +4,14 @@ import java.awt.Color;
 import java.awt.Frame;
 import java.awt.Graphics;
 import java.awt.Rectangle;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -12,7 +20,7 @@ import com.zzj.tank.cor.Collider;
 import com.zzj.tank.cor.ColliderChain;
 import com.zzj.tank.cor.TankTankCollider;
 
-public class GameModel {
+public class GameModel{
 	private static final GameModel INSTANCE = new GameModel();
 	//用了单例后，new主坦克需要先对INSTANCE初始化,修复了一个小bug，在P143视频4min。
 	static{
@@ -139,7 +147,57 @@ public class GameModel {
 		// TODO Auto-generated method stub
 		return myTank;
 	}
-
+	//实现存盘功能
+	public void save(){
+		File f = new File("obj.object");
+		ObjectOutputStream oos = null;
+		try {
+			oos = new ObjectOutputStream(new FileOutputStream(f));
+			oos.writeObject(myTank);
+			oos.writeObject(objects);
+		} catch (FileNotFoundException e) {
+			e.printStackTrace();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}finally{
+			if(oos != null){
+				try {
+					oos.close();
+				} catch (IOException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+			}
+		}
+	}
+	//实现读盘功能
+	public void load() {
+		File f = new File("obj.object");
+		ObjectInputStream ois = null;
+		try {
+			ois = new ObjectInputStream(new FileInputStream(f));
+			myTank = (Tank)ois.readObject();
+			objects = (List)ois.readObject();
+		} catch (FileNotFoundException e) {
+			e.printStackTrace();
+		} catch (IOException e) {
+			e.printStackTrace();
+		} catch (ClassNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}finally{
+			if(ois != null){
+				try {
+					ois.close();
+				} catch (IOException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+			}
+		}
+		
+	}
+	
 
 	
 
