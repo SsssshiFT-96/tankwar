@@ -1,4 +1,4 @@
-package com.zzj.NettyStudy.t01;
+package com.zzj.NettyStudy.s01;
 
 import java.io.IOException;
 import java.net.InetSocketAddress;
@@ -70,6 +70,7 @@ class ServerChildHandler extends ChannelInboundHandlerAdapter{
 
 	@Override
 	//用来读客户端写进来的数据
+	//ctx代表channel目前运行的网络环境，保存了网络运行的信息
 	public void channelRead(ChannelHandlerContext ctx, Object msg) throws Exception {
 		ByteBuf buf = null; 
 		try{

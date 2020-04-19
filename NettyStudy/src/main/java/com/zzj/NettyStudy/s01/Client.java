@@ -1,4 +1,4 @@
-package com.zzj.NettyStudy.t01;
+package com.zzj.NettyStudy.s01;
 
 import io.netty.bootstrap.Bootstrap;
 import io.netty.buffer.ByteBuf;
@@ -68,6 +68,7 @@ class ClientChannelInitializer extends ChannelInitializer<SocketChannel>{
 
 	@Override
 	protected void initChannel(SocketChannel ch) throws Exception {
+		//pipeline是channel通道上各个handler的链条，也就是handler的责任链
 		ch.pipeline().addLast(new ClientChildHandler());
 		
 	}	
@@ -91,7 +92,7 @@ class ClientChildHandler extends ChannelInboundHandlerAdapter{
 //			ctx.writeAndFlush(msg);
 		}finally{
 			//将buf释放，否则会造成内存泄露。
-//			if(buf != null) ReferenceCountUtil.release(buf);
+			if(buf != null) ReferenceCountUtil.release(buf);
 //			System.out.println(buf.refCnt());
 		}
 		
@@ -100,7 +101,7 @@ class ClientChildHandler extends ChannelInboundHandlerAdapter{
 	//这个Handler启用了，就可以写数据
 	public void channelActive(ChannelHandlerContext ctx) throws Exception {
 		
-		//channel第一个连上可用，写出一个字符串。
+		//channel第一个连上可用，写出一个字符串。将字符串转成ByteBuf
 		ByteBuf buf = Unpooled.copiedBuffer("hello".getBytes());
 		//Bytebuf效率高。因为在虚拟机里面直接访问操作系统的内存，即直接内存。
 		//但存一个问题就是跳过了垃圾回收机制。
