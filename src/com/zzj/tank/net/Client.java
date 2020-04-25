@@ -1,6 +1,9 @@
 package com.zzj.tank.net;
 
 
+import com.zzj.tank.Tank;
+import com.zzj.tank.TankFrame;
+
 import io.netty.bootstrap.Bootstrap;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
@@ -11,14 +14,16 @@ import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;
 import io.netty.channel.ChannelInitializer;
 import io.netty.channel.EventLoopGroup;
+import io.netty.channel.SimpleChannelInboundHandler;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioSocketChannel;
 import io.netty.util.ReferenceCountUtil;
 
 public class Client {
+	public static final Client INSTANCE = new Client();
 	private Channel channel = null;
-	
+	private Client(){};
 	public void connect(){
 		//线程池，循环事件不断处理的组。默认值很多，客户端的话传一个线程进去即可
 		EventLoopGroup group = new NioEventLoopGroup(1);//线程封装在此
@@ -67,20 +72,24 @@ public class Client {
 		}
 	}
 	
-	public void send(String msg){
+//	public void send(String msg){
+//		//将写好的字符串msg转成ByteBuf，通过channel并写给服务器
+//		ByteBuf buf = Unpooled.copiedBuffer(msg.getBytes());
+//		channel.writeAndFlush(buf);
+//	}
+	public void send(TankJoinMsg msg){
 		//将写好的字符串msg转成ByteBuf，通过channel并写给服务器
-		ByteBuf buf = Unpooled.copiedBuffer(msg.getBytes());
-		channel.writeAndFlush(buf);
+		channel.writeAndFlush(msg);
 	}
 	
 	
-	public static void main(String[] args) throws Exception{
-		Client c = new Client();
-		c.connect();
-		
-	}
+//	public static void main(String[] args) throws Exception{
+//		Client c = new Client();
+//		c.connect();
+//		
+//	}
 	public void closeConnect(){
-		this.send("_bye_");
+//		this.send("_bye_");
 	}
 	
 	
@@ -91,11 +100,46 @@ class ClientChannelInitializer extends ChannelInitializer<SocketChannel>{
 	@Override
 	protected void initChannel(SocketChannel ch) throws Exception {
 		ch.pipeline()
-		.addLast(new TankMsgEncoder())//将msg转换成ByteBuf
-		.addLast(new ClientChildHandler());
-		
+			.addLast(new TankJoinMsgEncoder())//将msg编码发出去
+			.addLast(new TankJoinMsgDecoder())//用于对接收的数据解码
+			.addLast(new ClientHandler());
+			//.addLast(new ClientChildHandler());
 	}	
 }
+
+//若接收到的消息类型确定，就可以继承这个类
+/*
+ 接收坦克的逻辑处理
+ 1.判断是不是自己
+ 2.列表是不是已经有了
+ 3.发自己的一个TankJoinMsg，是为了发给新加入的客户端，使之产生本客户端的对象。
+ */
+class ClientHandler extends SimpleChannelInboundHandler<TankJoinMsg>{
+
+	@Override
+	protected void channelRead0(ChannelHandlerContext ctx, TankJoinMsg msg) throws Exception {
+		//将接收到的消息自己进行处理
+//		msg.handle();
+		
+		//判断接收到的坦克是否是自己的坦克或者是列表中存在的坦克
+		if(msg.id.equals(TankFrame.INSTANCE.getMainTank().getId()) ||
+				TankFrame.INSTANCE.findByUUID(msg.id)!= null) return;
+//		System.out.println(111);
+		//通过msg初始化一个坦克，然后将坦克加入列表
+		Tank t = new Tank(msg);
+		TankFrame.INSTANCE.addTank(t);
+		//将自己的坦克信息传出去
+		ctx.writeAndFlush(new TankJoinMsg(TankFrame.INSTANCE.getMainTank()));
+		
+	}
+
+	@Override
+	public void channelActive(ChannelHandlerContext ctx) throws Exception {
+		ctx.writeAndFlush(new TankJoinMsg(TankFrame.INSTANCE.getMainTank()));
+	}
+	
+}
+
 class ClientChildHandler extends ChannelInboundHandlerAdapter{
 
 	@Override
@@ -124,14 +168,18 @@ class ClientChildHandler extends ChannelInboundHandlerAdapter{
 		
 	}
 	@Override
-	//这个Handler启用了，就可以写数据
+	//这个Handler启用了，就可以往外写数据
 	public void channelActive(ChannelHandlerContext ctx) throws Exception {
 		
 		//channel第一个连上可用，写出一个字符串。将字符串转成ByteBuf
 //		ByteBuf buf = Unpooled.copiedBuffer("hello".getBytes());
 //		ctx.writeAndFlush(buf);
 		//因为有了TankMsgEncoder，所以可以直接写TankMsg然后通过编码写出去。
-		ctx.writeAndFlush(new TankJoinMsg(5, 8));
+//		ctx.writeAndFlush(new TankJoinMsg(5, 8));
+		
+		ctx.writeAndFlush(new TankJoinMsg(TankFrame.INSTANCE.getMainTank()));
+	
 	}
+	
 		
 }

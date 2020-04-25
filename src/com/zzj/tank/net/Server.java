@@ -45,7 +45,8 @@ public class Server {
 					// TODO Auto-generated method stub
 //					System.out.println(ch);
 					ChannelPipeline p1 = ch.pipeline();//获得该channel的责任链
-					p1.addLast(new TankMsgDecoder())//将接收到的ByteBuf解码成Msg
+					p1.addLast(new TankJoinMsgDecoder())//将接收到的ByteBuf解码成Msg
+					.addLast(new TankJoinMsgEncoder())
 					.addLast(new ServerChildHandler());//往责任链上增加Handler，
 														//一旦往这个上面写数据，则用Handler来处理。
 				}
@@ -79,13 +80,17 @@ class ServerChildHandler extends ChannelInboundHandlerAdapter{
 	@Override
 	//用来读客户端写进来的数据
 	public void channelRead(ChannelHandlerContext ctx, Object msg) throws Exception {
+		//服务器端接收到后就直接转发。
+		Server.clients.writeAndFlush(msg);
+		
+		
 		//因为用了解码器，所以这里就直接接受为Msg，不再是ByteBuf
-		try{
-			TankJoinMsg tm = (TankJoinMsg) msg;
-			System.out.println(tm);
-		}finally{
-			ReferenceCountUtil.release(msg);
-		}
+//		try{
+//			TankJoinMsg tm = (TankJoinMsg) msg;
+//			System.out.println(tm);
+//		}finally{
+//			ReferenceCountUtil.release(msg);
+//		}
 		/*
 		ByteBuf buf = null; 
 		try{
