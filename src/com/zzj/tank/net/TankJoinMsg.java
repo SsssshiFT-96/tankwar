@@ -38,15 +38,16 @@ public class TankJoinMsg extends Msg{
 	public TankJoinMsg(){
 		
 	}
-	
+	//根据bytes填写好属性
 	public void parse(byte[] bytes){
 		DataInputStream dis = new DataInputStream(new ByteArrayInputStream(bytes));
 		try{
 			this.x = dis.readInt();
 			this.y = dis.readInt();
 			this.dir = Dir.values()[dis.readInt()];
-			this.id = new UUID(dis.readLong(), dis.readLong());
 			this.moving = dis.readBoolean();
+			this.group = Group.values()[dis.readInt()];
+			this.id = new UUID(dis.readLong(), dis.readLong());
 			
 		}catch(IOException e){
 			e.printStackTrace();
@@ -125,5 +126,11 @@ public class TankJoinMsg extends Msg{
 		Client.INSTANCE.send(new TankJoinMsg(TankFrame.INSTANCE.getMainTank()));
 		
 	}
+	//返回消息的类型
+
+	public MsgType getMsgType() {
+		return MsgType.TankJoin;
+	}
+	
 	
 }

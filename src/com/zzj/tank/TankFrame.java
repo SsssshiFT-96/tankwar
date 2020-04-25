@@ -15,6 +15,10 @@ import java.util.Map;
 import java.util.Random;
 import java.util.UUID;
 
+import com.zzj.tank.net.Client;
+import com.zzj.tank.net.TankStartMovingMsg;
+import com.zzj.tank.net.TankStopMsg;
+
 public class TankFrame extends Frame{
 	public static final TankFrame INSTANCE = new TankFrame();
 	//主坦克随机位置
@@ -180,14 +184,25 @@ public class TankFrame extends Frame{
 		private void setMainTankDir() {//设置事件发生后坦克的方向
 			// TODO Auto-generated method stub
 			
-			if(!bL && !bR && !bU && !bD) //让坦克停止的情况
+			if(!bL && !bR && !bU && !bD){
+				//让坦克停止的情况
 				myTank.setMoving(false);
+				//将坦克停止的消息发出
+				Client.INSTANCE.send(new TankStopMsg(getMainTank()));
+			}
+				
 			else {
-				myTank.setMoving(true);//按下键后设置坦克移动
+
 				if(bL) myTank.setDir(Dir.LEFT);
 				if(bR) myTank.setDir(Dir.RIGHT);
 				if(bU) myTank.setDir(Dir.UP);
 				if(bD) myTank.setDir(Dir.DOWN);
+				
+				//发出坦克移动的消息
+				if(!myTank.isMoving())
+					Client.INSTANCE.send(new TankStartMovingMsg(getMainTank()));
+				myTank.setMoving(true);//按下键后设置坦克移动
+			
 			}
 		}
 		

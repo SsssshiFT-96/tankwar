@@ -45,8 +45,8 @@ public class Server {
 					// TODO Auto-generated method stub
 //					System.out.println(ch);
 					ChannelPipeline p1 = ch.pipeline();//获得该channel的责任链
-					p1.addLast(new TankJoinMsgDecoder())//将接收到的ByteBuf解码成Msg
-					.addLast(new TankJoinMsgEncoder())
+					p1.addLast(new MsgDecoder())//将接收到的ByteBuf解码成Msg
+					.addLast(new MsgEncoder())
 					.addLast(new ServerChildHandler());//往责任链上增加Handler，
 														//一旦往这个上面写数据，则用Handler来处理。
 				}

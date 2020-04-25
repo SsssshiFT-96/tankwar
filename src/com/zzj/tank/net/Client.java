@@ -77,7 +77,7 @@ public class Client {
 //		ByteBuf buf = Unpooled.copiedBuffer(msg.getBytes());
 //		channel.writeAndFlush(buf);
 //	}
-	public void send(TankJoinMsg msg){
+	public void send(Msg msg){
 		//将写好的字符串msg转成ByteBuf，通过channel并写给服务器
 		channel.writeAndFlush(msg);
 	}
@@ -100,8 +100,8 @@ class ClientChannelInitializer extends ChannelInitializer<SocketChannel>{
 	@Override
 	protected void initChannel(SocketChannel ch) throws Exception {
 		ch.pipeline()
-			.addLast(new TankJoinMsgEncoder())//将msg编码发出去
-			.addLast(new TankJoinMsgDecoder())//用于对接收的数据解码
+			.addLast(new MsgEncoder())//将msg编码发出去
+			.addLast(new MsgDecoder())//用于对接收的数据解码
 			.addLast(new ClientHandler());
 			//.addLast(new ClientChildHandler());
 	}	
@@ -114,22 +114,22 @@ class ClientChannelInitializer extends ChannelInitializer<SocketChannel>{
  2.列表是不是已经有了
  3.发自己的一个TankJoinMsg，是为了发给新加入的客户端，使之产生本客户端的对象。
  */
-class ClientHandler extends SimpleChannelInboundHandler<TankJoinMsg>{
+class ClientHandler extends SimpleChannelInboundHandler<Msg>{
 
 	@Override
-	protected void channelRead0(ChannelHandlerContext ctx, TankJoinMsg msg) throws Exception {
+	protected void channelRead0(ChannelHandlerContext ctx, Msg msg) throws Exception {
 		//将接收到的消息自己进行处理
-//		msg.handle();
+		msg.handle();
 		
 		//判断接收到的坦克是否是自己的坦克或者是列表中存在的坦克
-		if(msg.id.equals(TankFrame.INSTANCE.getMainTank().getId()) ||
-				TankFrame.INSTANCE.findByUUID(msg.id)!= null) return;
-//		System.out.println(111);
-		//通过msg初始化一个坦克，然后将坦克加入列表
-		Tank t = new Tank(msg);
-		TankFrame.INSTANCE.addTank(t);
-		//将自己的坦克信息传出去
-		ctx.writeAndFlush(new TankJoinMsg(TankFrame.INSTANCE.getMainTank()));
+//		if(msg.id.equals(TankFrame.INSTANCE.getMainTank().getId()) ||
+//				TankFrame.INSTANCE.findByUUID(msg.id)!= null) return;
+////		System.out.println(111);
+//		//通过msg初始化一个坦克，然后将坦克加入列表
+//		Tank t = new Tank(msg);
+//		TankFrame.INSTANCE.addTank(t);
+//		//将自己的坦克信息传出去
+//		ctx.writeAndFlush(new TankJoinMsg(TankFrame.INSTANCE.getMainTank()));
 		
 	}
 
