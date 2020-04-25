@@ -9,18 +9,37 @@ import java.awt.event.KeyEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Random;
+import java.util.UUID;
 
 public class TankFrame extends Frame{
-	Tank myTank = new Tank(400,400,Dir.UP, Group.GOOD, this);
+	public static final TankFrame INSTANCE = new TankFrame();
+	//主坦克随机位置
+	Random r = new Random();
+	Tank myTank = new Tank(r.nextInt(GAME_WIDTH),r.nextInt(GAME_HEIGHT),
+			Dir.UP, Group.GOOD, this);
 	List<Bullet> bullets = new ArrayList<>();
 	//Bullet b = new Bullet(300,300,Dir.DOWN);
 	//加入敌方坦克
-	List<Tank> tanks = new ArrayList<>();
+//	List<Tank> tanks = new ArrayList<>();
+	Map<UUID, Tank> tanks = new HashMap<>();//用哈希寻找速度快
 	List<Explode> explodes = new ArrayList<>();
 	Explode e = new Explode(100, 100, this);
 	
 	static final int GAME_WIDTH = 1080, GAME_HEIGHT = 720;
+	
+	public Tank findByUUID(UUID id) {
+		return tanks.get(id);
+		
+	}
+
+	public void addTank(Tank t) {
+		// TODO Auto-generated method stub
+		tanks.put(t.getId(), t);
+	}
 	
 	public TankFrame(){
 		setSize(GAME_WIDTH,GAME_HEIGHT);//设置窗口大小
@@ -78,9 +97,11 @@ public class TankFrame extends Frame{
 			bullets.get(i).paint(g);
 		}
 		//画坦克
-		for(int i = 0; i < tanks.size(); i++){
-			tanks.get(i).paint(g);
-		}
+//		for(int i = 0; i < tanks.size(); i++){
+//			tanks.get(i).paint(g);
+//		}
+		//java8 stream api来画坦克
+		tanks.values().stream().forEach((e)-> e.paint(g));
 		
 		//画爆炸
 		for(int i = 0; i < explodes.size(); i++){
@@ -170,7 +191,16 @@ public class TankFrame extends Frame{
 			}
 		}
 		
+		
 	}
+	
+	//获得主战坦克
+	public Tank getMainTank(){
+		return this.myTank;
+	}
+
+	
+	
 }
 
 

@@ -4,6 +4,8 @@ import java.awt.Frame;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 
+import com.zzj.tank.net.Client;
+
 public class Main {
 
 	public static void main(String[] args) throws Exception {
@@ -21,7 +23,9 @@ public class Main {
 //				System.exit(0);
 //			}
 //		});
-		TankFrame tf = new TankFrame();
+		TankFrame tf = TankFrame.INSTANCE;
+		tf.setVisible(true);
+		
 		//获得配置文件中初始坦克的个数
 //		int initTankCount = Integer.parseInt
 //				((String)PropertyMgr.get("initTankCount"));
@@ -29,10 +33,23 @@ public class Main {
 //		for(int i = 0; i < initTankCount; i++){
 //			tf.tanks.add(new Tank(50 + i*100, 200, Dir.DOWN, Group.BAD, tf));
 //		}
-		while(true){
-			Thread.sleep(25);//每隔50ms重新调用一次窗口。
+		//用单独的线程来重画，若不用单独线程，由于while的存在则下面的代码就执行不了。
+		new Thread(()->{
+			while(true){
+			try {//每隔50ms重新调用一次窗口。
+				Thread.sleep(25);
+			} catch (Exception e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 			tf.repaint();//调用repaint方法
 		}
+		}).start();
+		
+		//进行网络连接
+//		Client c = new Client();
+		Client.INSTANCE.connect();
+		
 	}
 
 }
