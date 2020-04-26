@@ -9,6 +9,7 @@ import java.awt.event.KeyEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -16,6 +17,7 @@ import java.util.Random;
 import java.util.UUID;
 
 import com.zzj.tank.net.Client;
+import com.zzj.tank.net.TankDirChangedMsg;
 import com.zzj.tank.net.TankStartMovingMsg;
 import com.zzj.tank.net.TankStopMsg;
 
@@ -40,9 +42,23 @@ public class TankFrame extends Frame{
 		
 	}
 
+	public Bullet findBulletByUUID(UUID bulletID) {
+		for(int i = 0; i < bullets.size(); i++){
+			if(bullets.get(i).getId().equals(bulletID))
+				return bullets.get(i);
+		}
+		return null;
+	}
+
+
 	public void addTank(Tank t) {
-		// TODO Auto-generated method stub
+		
 		tanks.put(t.getId(), t);
+	}
+	
+	public void addBullet(Bullet bullet) {
+
+		bullets.add(bullet);
 	}
 	
 	public TankFrame(){
@@ -113,12 +129,17 @@ public class TankFrame extends Frame{
 		}
 		
 		//判断子弹和坦克是否相撞
+//		for(int i = 0; i < bullets.size(); i++){
+//			for(int j = 0; j < tanks.size(); j++){
+//				bullets.get(i).collideWith(tanks.get(j));
+//			}
+//		}
+		Collection<Tank> values = tanks.values();
 		for(int i = 0; i < bullets.size(); i++){
-			for(int j = 0; j < tanks.size(); j++){
-				bullets.get(i).collideWith(tanks.get(j));
+			for(Tank t : values){
+				bullets.get(i).collideWith(t);
 			}
 		}
-		
 
 		
 //		x += 10;
@@ -183,6 +204,7 @@ public class TankFrame extends Frame{
 
 		private void setMainTankDir() {//设置事件发生后坦克的方向
 			// TODO Auto-generated method stub
+			Dir dir = myTank.getDir();
 			
 			if(!bL && !bR && !bU && !bD){
 				//让坦克停止的情况
@@ -203,6 +225,10 @@ public class TankFrame extends Frame{
 					Client.INSTANCE.send(new TankStartMovingMsg(getMainTank()));
 				myTank.setMoving(true);//按下键后设置坦克移动
 			
+				//发出坦克方向变化的消息
+				if(dir != myTank.getDir()){
+					Client.INSTANCE.send(new TankDirChangedMsg(myTank));
+				}
 			}
 		}
 		
@@ -213,6 +239,8 @@ public class TankFrame extends Frame{
 	public Tank getMainTank(){
 		return this.myTank;
 	}
+
+
 
 	
 	

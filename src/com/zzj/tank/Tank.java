@@ -6,6 +6,8 @@ import java.awt.Rectangle;
 import java.util.Random;
 import java.util.UUID;
 
+import com.zzj.tank.net.BulletNewMsg;
+import com.zzj.tank.net.Client;
 import com.zzj.tank.net.TankJoinMsg;
 
 public class Tank {
@@ -70,8 +72,10 @@ public class Tank {
 		// TODO Auto-generated method stub
 		int bX = this.x + Tank.WIDTH / 2 - Bullet.WIDTH / 2;
 		int bY = this.y + Tank.HEIGHT / 2 - Bullet.HEIGHT / 2;
-		tf.bullets.add(new Bullet(bX, bY, this.dir, this.group,this.tf));
-		
+//		tf.bullets.add(new Bullet(this.id, bX, bY, this.dir, this.group,this.tf));
+		Bullet b = new Bullet(this.id, bX, bY, this.dir, this.group,this.tf);
+		tf.bullets.add(b);
+		Client.INSTANCE.send(new BulletNewMsg(b));
 	}
 	public Dir getDir() {
 		return dir;
@@ -142,7 +146,15 @@ public class Tank {
 		g.setColor(c);
 		
 		//上坦克图片，不同方向的图片不同。
-		if(!living) tf.tanks.remove(this);//没活着就移除
+		if(!living){
+			moving = false;
+			Color cc = g.getColor();
+			g.setColor(Color.WHITE);
+			g.drawRect(x, y, WIDTH, HEIGHT);
+			g.setColor(cc);
+			return;
+//			tf.tanks.remove(this);//没活着就移除
+		}
 		//判断是否是敌方坦克来获取相应图片
 		switch(dir){
 			case LEFT:
@@ -192,5 +204,8 @@ public class Tank {
 	}
 	public void setY(int y) {
 		this.y = y;
+	}
+	public boolean isLiving() {
+		return living;
 	}
 }

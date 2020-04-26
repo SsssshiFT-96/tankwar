@@ -37,8 +37,8 @@ public class MsgDecoder extends ByteToMessageDecoder {
 		
 		Msg msg = null;
 		//使用反射代替switch
-//		Class.forName(msgType.toString() + "Msg").
-//		getConstructor().newInstance();	
+//		msg = (Msg) Class.forName("com.zzj.tank.net" + msgType.toString() + "Msg").
+//		getDeclaredConstructor().newInstance();	
 		
 		
 		switch(msgType){
@@ -50,6 +50,15 @@ public class MsgDecoder extends ByteToMessageDecoder {
 			break;
 		case TankStop:
 			msg = new TankStopMsg();
+			break;
+		case BulletNew:
+			msg = new BulletNewMsg();
+			break;
+		case TankDie:
+			msg = new TankDieMsg();
+			break;
+		case TankDirChanged:
+			msg = new TankDirChangedMsg();
 			break;
 		default:
 			break;
